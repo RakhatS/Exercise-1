@@ -1,0 +1,172 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+</head>
+<body>
+<h1>Employee Management</h1>
+
+<h2>Find All Employees</h2>
+<input id="search_text" type="text">
+<button onclick="findAllEmployees()">Find All Employees</button>
+<table id="findAllEmployeesResult" border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>SurName</th>
+        <th>Phone Number</th>
+        <th>Country</th>
+        <th>City</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Save Employee</h2>
+<form id="saveEmployeeForm">
+    <label>Email:</label>
+    <input type="text" id="email" required><br>
+
+    <label>First Name:</label>
+    <input type="text" id="firstName" required><br>
+
+    <label>Last Name:</label>
+    <input type="text" id="lastName" required><br>
+
+    <label>SurName:</label>
+    <input type="text" id="surName"><br>
+
+    <label>Phone Number:</label>
+    <input type="text" id="phoneNumber" required><br>
+
+    <label>Country:</label>
+    <select id="country" required>
+<!--        <option value="">Select Country</option>-->
+    </select><br>
+
+    <label>City:</label>
+    <select id="city" required>
+<!--        <option value="">Select City</option>-->
+    </select><br>
+
+    <button type="button" onclick="saveEmployee()">Save Employee</button>
+</form>
+<div id="saveEmployeeResult"></div>
+
+<script>
+    function fetchCountriesAndCities() {
+        fetch('/api/v1/get_countries')
+            .then(response => response.json())
+            .then(data => {
+                const countryDropdown = document.getElementById('country');
+                data.countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.name;
+                    option.text = country.name;
+                    countryDropdown.appendChild(option);
+                });
+
+                countryDropdown.dispatchEvent(new Event('change'));
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    document.getElementById('country').addEventListener('change', function () {
+        const country = this.value;
+        const cityDropdown = document.getElementById('city');
+        cityDropdown.innerHTML = '<option value="">Select City</option>';
+
+        if (country) {
+            fetch('/api/v1/get_countries')
+                .then(response => response.json())
+                .then(data => {
+                    const selectedCountry = data.countries.find(c => c.name === country);
+                    if (selectedCountry) {
+                        selectedCountry.cities.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city;
+                            option.text = city;
+                            cityDropdown.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+
+    function findAllEmployees() {
+    const search_text = document.getElementById('search_text').value;
+        fetch('/api/v1/employees?search_text='+search_text)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#findAllEmployeesResult tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(employee => {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).textContent = employee.id;
+                    row.insertCell(1).textContent = employee.email;
+                    row.insertCell(2).textContent = employee.firstName;
+                    row.insertCell(3).textContent = employee.lastName;
+                    row.insertCell(4).textContent = employee.surName;
+                    row.insertCell(5).textContent = employee.phoneNumber;
+                    row.insertCell(6).textContent = employee.country;
+                    row.insertCell(7).textContent = employee.city;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function saveEmployee() {
+    document.getElementById('saveEmployeeResult').innerHTML = ''
+        const email = document.getElementById('email').value;
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const surName = document.getElementById('surName').value;
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const country = document.getElementById('country').value;
+        const city = document.getElementById('city').value;
+
+        const employee = {
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            surName: surName,
+            phoneNumber: phoneNumber,
+            country: country,
+            city: city
+        };
+
+        fetch('/api/v1/employees/save_employee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(employee)
+        })
+        .then(response => response.json())
+        .then(data => {
+        findAllEmployees();
+            document.getElementById('saveEmployeeResult').innerHTML = JSON.stringify(data, null, 2);
+
+        })
+        .catch(error => {
+         findAllEmployees();
+        console.error('Error:', error)});
+
+    }
+
+window.onload = function() {
+        fetchCountriesAndCities();
+        findAllEmployees();
+    };
+
+</script>
+</body>
+</html>

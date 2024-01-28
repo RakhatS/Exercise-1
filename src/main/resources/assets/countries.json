@@ -1,0 +1,28 @@
+{
+  "countries": [
+    {
+      "name": "United States",
+      "cities": ["New York", "Los Angeles", "Chicago", "Houston"]
+    },
+    {
+      "name": "United Kingdom",
+      "cities": ["London", "Manchester", "Birmingham", "Glasgow"]
+    },
+    {
+      "name": "France",
+      "cities": ["Paris", "Marseille", "Lyon", "Toulouse"]
+    },
+    {
+      "name": "Germany",
+      "cities": ["Berlin", "Hamburg", "Munich", "Cologne"]
+    },
+    {
+      "name": "Japan",
+      "cities": ["Tokyo", "Osaka", "Kyoto", "Yokohama"]
+    },
+    {
+      "name": "India",
+      "cities": ["Mumbai", "Delhi", "Bangalore", "Chennai"]
+    }
+  ]
+}
