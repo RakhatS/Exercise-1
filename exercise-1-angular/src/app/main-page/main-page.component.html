@@ -1,0 +1,179 @@
+<div class="container">
+  <div class="spinner-border" role="status" *ngIf="loading">
+    <span class="sr-only"></span>
+  </div>
+
+
+  <hr>
+  <br>
+    <select class="switchLang" #selectedLang (change)="switchLang(selectedLang.value)" style="width: 100px;">
+      <option *ngFor="let language of translate.getLangs()" [value]="language"
+        [selected]="language === translate.getDefaultLang()">{{ language }}</option>
+    </select>
+  <div class="row" style="margin-bottom: 20px;">
+    <div class="col">
+      <div class="row">
+        <div class="col-8">
+          <input type="text" class="form-control" [(ngModel)]="search_text" [ngModelOptions]="{standalone: true}"
+            (change)="getEmployees()">
+        </div>
+        <div class="col-2">
+          <button (click)="getEmployees()" class="btn btn-info"><i class="bi bi-search"></i></button>
+        </div>
+
+
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">{{ 'FirstName' | translate }}</th>
+            <th scope="col">{{ 'LastName' | translate }}</th>
+            <th scope="col">{{ 'SurName' | translate }}</th>
+            <th scope="col">Email</th>
+            <th scope="col">{{ 'PhoneNumber' | translate }}</th>
+            <th scope="col">{{ 'Country' | translate }}</th>
+            <th scope="col">{{ 'City' | translate }}</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of employees; let i = index;">
+            <th scope="row">{{ i + 1 }}</th>
+            <td>{{ employee.firstName }}</td>
+            <td>{{ employee.lastName }}</td>
+            <td>{{ employee.surName }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.phoneNumber }}</td>
+            <td>{{ employee.country }}</td>
+            <td>{{ employee.city }}</td>
+            <td>
+              <button class="btn btn-danger" (click)="deleteEmployee(employee.email!)">{{ 'Delete' | translate }}</button>
+              <button class="btn btn-primary" (click)="openEdit(employee)">{{ 'Edit' | translate }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <div *ngIf="isEdit == false && newEmployee">
+        <form ngNativeValidate (ngSubmit)="saveEmployee()">
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'FirstName' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="newEmployee.firstName"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'LastName' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="newEmployee.lastName"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'SurName' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="newEmployee.surName"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">Email</label>
+            <input type="email" class="form-control" id="inputTournamentName" [(ngModel)]="newEmployee.email"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'PhoneNumber' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="newEmployee.phoneNumber"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+
+          <div class="mb-3">
+            <label>{{ 'Country' | translate }}:</label>
+            <select id="country" [(ngModel)]="newEmployee.country" required (change)="onCountryChange(newEmployee)"
+              [ngModelOptions]="{standalone: true}">
+              <option value="" disabled>Select Country</option>
+              <option *ngFor="let country of countries" [value]="country.name">{{ country.name }}</option>
+            </select><br>
+          </div>
+
+
+
+
+          <div class="mb-3">
+            <label for="city">{{ 'City' | translate }}:</label>
+            <select id="city" [(ngModel)]="newEmployee.city" required [ngModelOptions]="{standalone: true}">
+              <!-- <option value="">Select City</option> -->
+              <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+            </select><br>
+          </div>
+
+
+
+          <button class="btn btn-primary" type="submit">{{ 'Save' | translate }}</button>
+        </form>
+      </div>
+      <div *ngIf="isEdit == true && selectedEmployee">
+        <form ngNativeValidate (ngSubmit)="updateEmployee()">
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'FirstName' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="selectedEmployee.firstName"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+      
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'LastName' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="selectedEmployee.lastName"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+      
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'SurName' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="selectedEmployee.surName"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+      
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">Email</label>
+            <input type="email" class="form-control" id="inputTournamentName" [(ngModel)]="selectedEmployee.email"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+      
+          <div class="mb-3">
+            <label for="inputTournamentName" class="form-label">{{ 'PhoneNumber' | translate }}</label>
+            <input type="text" class="form-control" id="inputTournamentName" [(ngModel)]="selectedEmployee.phoneNumber"
+              [ngModelOptions]="{standalone: true}" required [disabled]="loading">
+          </div>
+      
+          <div class="mb-3">
+            <label>{{ 'Country' | translate }}:</label>
+            <select id="country" [(ngModel)]="selectedEmployee.country" required (change)="onCountryChange(selectedEmployee)"
+              [ngModelOptions]="{standalone: true}">
+              <!-- <option value="" disabled>Select Country</option> -->
+              <option *ngFor="let country of countries" [value]="country.name">{{ country.name }}</option>
+            </select><br>
+          </div>
+      
+      
+      
+      
+          <div class="mb-3">
+            <label for="city">{{ 'City' | translate }}:</label>
+            <select id="city" [(ngModel)]="selectedEmployee.city" required [ngModelOptions]="{standalone: true}">
+              <!-- <option value="">Select City</option> -->
+              <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+            </select><br>
+          </div>
+      
+      
+      
+          <button class="btn btn-primary" type="submit">{{ 'Update' | translate }}</button>
+        </form>
+        <button class="btn btn-danger" type="submit" (click)="closeEdit()">{{ 'Close' | translate }}</button>
+      </div>
+    </div>
+
+
+
+  </div>

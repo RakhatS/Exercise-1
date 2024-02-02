@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/employees")
 @AllArgsConstructor
+@CrossOrigin(maxAge = 3600)
 public class EmployeeController {
 
 
